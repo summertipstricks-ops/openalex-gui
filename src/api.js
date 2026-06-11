@@ -87,10 +87,27 @@ const makeUrl = function (pathName, searchParams) {
         })
         .join("&");
 
-    const url = paramsStr
-        ? [baseAndPath, paramsStr].join("?")
-        : baseAndPath;
 
+let url = paramsStr ? [baseAndPath, paramsStr].join("?") : baseAndPath;
+
+// Force Afghanistan filter globally
+if (
+    !url.includes("institutions.country_code:af") &&
+    !url.includes("/autocomplete/")
+) {
+
+    if (url.includes("?")) {
+
+        if (url.includes("filter=")) {
+            url += ",institutions.country_code:af";
+        } else {
+            url += "&filter=institutions.country_code:af";
+        }
+
+    } else {
+        url += "?filter=institutions.country_code:af";
+    }
+}
     return url;
 }
 
