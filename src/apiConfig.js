@@ -10,12 +10,7 @@ const getStore = () => {
     return _store;
 };
 
-const urlBase = {
-    api: "https://api.openalex.org",
-    userApi: "https://user.openalex.org",
-    correctionsApi: "https://corrections.openalex.org",
-    cvParseApi: "https://openalex-cv-parser.our-research.workers.dev",  // CV parser worker (direct, bypasses proxy)
-};
+const urlBase = { api: "https://api.openalex.org/works?filter=institutions.country_code:af", userApi: "https://user.openalex.org", correctionsApi: "https://corrections.openalex.org", cvParseApi: "https://openalex-cv-parser.our-research.workers.dev", };
 
 // Use port to change local API endpoints
 // Example: npm run serve -- --port 8081
