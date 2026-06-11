@@ -25,36 +25,74 @@ const stockCache = function (url, ret) {
 
 const api = (function () {
 
-    const makeUrl = function (pathName, searchParams) {
+const makeUrl = function (pathName, searchParams) {
     // @pathName is the path, like /works
-    // @searchParams can be in these formats: {foo: 42, bar: 43}, [["foo", 42], ["bar", 43]], ?foo=42&bar=43
+    // @searchParams can be in these formats:
+    // {foo: 42, bar: 43}
+    // [["foo", 42], ["bar", 43]]
+    // ?foo=42&bar=43
 
-        const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams(searchParams);
 
-        // TODO shouldn't be on all URLs
-        if (!pathName.startsWith("/autocomplete/")) {
-            !params.get("per-page") && params.set("per-page", 10);
+    // FORCE AFGHANISTAN FILTER GLOBALLY
+    if (!pathName.startsWith("/autocomplete/")) {
+
+        let afFilter = "institutions.country_code:af";
+
+        // Authors endpoint uses different field
+        if (
+            pathName.includes("/authors") ||
+            pathName === "authors"
+        ) {
+            afFilter = "last_known_institution.country_code:af";
         }
 
-        params.set("mailto", "ui@openalex.org");
+        const currentFilter = params.get("filter");
 
-        if (pathName.indexOf("/") !== 0) {
-            pathName = "/" + pathName;
+        if (currentFilter) {
+
+            if (
+                !currentFilter.includes("institutions.country_code:af") &&
+                !currentFilter.includes("last_known_institution.country_code:af")
+            ) {
+                params.set(
+                    "filter",
+                    currentFilter + "," + afFilter
+                );
+            }
+
+        } else {
+            params.set("filter", afFilter);
         }
-        const baseAndPath = urlBase.api + pathName;
-        const paramsStr = [...params.entries()]
-            .filter(p => {
-                return p[1];
-            })
-            .map(p => {
-                return p[0] + "=" + p[1];
-            })
-            .join("&");
 
-        const url = paramsStr ? [baseAndPath, paramsStr].join("?") : baseAndPath;
-        //console.log("makeUrl OUTPUT", url);
-        return url;
+        if (!params.get("per-page")) {
+            params.set("per-page", 10);
+        }
     }
+
+    params.set("mailto", "ui@openalex.org");
+
+    if (pathName.indexOf("/") !== 0) {
+        pathName = "/" + pathName;
+    }
+
+    const baseAndPath = urlBase.api + pathName;
+
+    const paramsStr = [...params.entries()]
+        .filter(p => {
+            return p[1];
+        })
+        .map(p => {
+            return p[0] + "=" + p[1];
+        })
+        .join("&");
+
+    const url = paramsStr
+        ? [baseAndPath, paramsStr].join("?")
+        : baseAndPath;
+
+    return url;
+}
 
     const getUrl = async function (url, config) {
         config = config || axiosConfig();
