@@ -11,7 +11,7 @@ const getStore = () => {
 };
 
 const urlBase = {
-    api: "https://api.openalex.org/?filter=institutions.country_code:AF",
+    api: "https://api.openalex.org/works?filter=institutions.country_code:AF",
     userApi: "https://user.openalex.org",
     correctionsApi: "https://corrections.openalex.org",
     cvParseApi: "https://openalex-cv-parser.our-research.workers.dev",  // CV parser worker (direct, bypasses proxy)
